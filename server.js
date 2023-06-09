@@ -1,8 +1,10 @@
 const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
-const { question } = require("./config/data");
+let { question } = require("./config/data");
 const bodyParser = require("body-parser");
+const { v4: uuidv4 } = require('uuid');
+
 // require('./config/csvtojson')
 // console.log(questions);
 
@@ -53,10 +55,8 @@ app.get("/register", (req, res) => {
 app.get("/all", (req, res) => {
   res.status(200).send(question);
 });
-app.post("/all", (req, res) => {
-  res.status(200).send(question);
-});
 
+// when user do a question //
 app.post("/addques", (req, res) => {
   const { username, quesId } = req.body;
   console.log(username, quesId);
@@ -70,8 +70,24 @@ app.post("/addques", (req, res) => {
   res.status(200).send({ msg: "success", user_ });
 });
 
+
 // ADMIN PANEL API'S //
 
+app.post('/all',(req,res)=>{
+  const {desc,corrAns,level,type,difficulty,isReviewed,opt} = req.body;
+  question.push({...req.body,id:uuidv4()})
+  res.status(200).send(question);
+})
+
+app.delete('/all/:id',(req,res)=>{
+  question = question.filter((item)=>item.id!=req.params.id);
+  res.status(200).send(question);
+})
+
+app.get('/all/:id',(req,res)=>{
+  // res.status(200).send(question[req.params.id]);
+  res.status(200).send({id:req.params.id,data:question[req.params.id]});
+})
 
 app.get("/", (req, res) => {
   res.send({ status: 400, msg: "success" });
