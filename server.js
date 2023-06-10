@@ -4,11 +4,12 @@ require("dotenv").config();
 let { question } = require("./config/data");
 const bodyParser = require("body-parser");
 const { v4: uuidv4 } = require('uuid');
+// const { OAuth2Client } = require('google-auth-library');
 
 // require('./config/csvtojson')
 // console.log(questions);
 
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 5000;
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
@@ -22,7 +23,7 @@ let user = [
   },
   {
     username: "rohit",
-    email: "rohit@123",
+    email: "singhanurag17042002@gmail.com",
     password: "11111",
     question: [],
   },
@@ -69,6 +70,18 @@ app.post("/addques", (req, res) => {
   console.log(user);
   res.status(200).send({ msg: "success", user_ });
 });
+
+
+// const client = new OAuth2Client('YOUR_GOOGLE_CLIENT_ID');
+
+app.post("/userlogin", (req, res) => {
+  const { email } = req.body;
+  const user_ = user.filter((item) => item.email == email);
+  if(user_.length==0) return res.send({status:400,msg:"user not found"})
+   res.send({status: 200,msg:"Logic successful",user_});
+});
+
+
 
 
 // ADMIN PANEL API'S //
