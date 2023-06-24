@@ -2,13 +2,12 @@ const mongoose =  require('mongoose');
 
 const Schema = mongoose.Schema; 
 const User = new Schema({
-    user:{
-      username:{ type: String, required:true },
-      email:{ type: String, unique: true },
-      password:{ type: String ,require:true},
-      pic: {type:String},
-      questions:[{ type: Number , default:[]}],
-    },
+    username:{ type: String, default:null },
+    email:{ type: String, unique: true,sparse:true},
+    password:{ type: String },
+    pic: {type:String},
+    token: {type:String},
+    questions:[{ type: String , default:[]}],
 })
 const ques = new Schema({
     Ques:{
