@@ -158,10 +158,19 @@ app.delete("/all/:id", async (req, res) => {
   await Questions.deleteOne(filter);
   res.status(200).send({msg:"deleted",status:200});
 });
+app.put("/all/:id", async (req, res) => {
+  const {Ques} = req.body
+  const question = await Questions.findById(req.body.id);
+  question.Ques = Ques
+  question.save();
+  res.status(200).send({id:req.body.id,question});
+});
 
-app.get("/all/:id", (req, res) => {
-  // res.status(200).send(question[req.params.id]);
-  res.status(200).send({ id: req.params.id, data: question[req.params.id] });
+app.get("/all/:id", async (req, res) => {
+  const id = req.params.id
+  const question = await Questions.findById(id);
+  console.log(question);
+  res.send(question);
 });
 
 app.get("/", (req, res) => {
