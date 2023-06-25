@@ -2,7 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
-const { Questions , mathcodeUser} = require("./model/model");
+const { Questions , mathcodeUser , admin} = require("./model/model");
 const connect = require("./config/db");
 const bodyParser = require("body-parser");
 require("dotenv").config();
@@ -172,6 +172,40 @@ app.get("/all/:id", async (req, res) => {
   console.log(question);
   res.send(question);
 });
+
+//---- FOR CREATING ADMIN USER ----//
+// app.post('/adminAuth' , async (req,res)=>{
+//   const {email,password} = req.body;
+//   console.log({email,password});
+//   const encryptedPassword = await bcrypt.hash(password,10);
+//   const user = await admin.create({
+//     email:email.toLowerCase(),
+//     password:encryptedPassword,
+//     token:'',
+//   })
+//   console.log(user);
+//   const token = jwt.sign(
+//     {user_id: user._id, email},
+//     process.env.TOKEN_KEY,
+//     {expiresIn: "15d",}
+//   )
+//   console.log({token});
+//   user.token = token;
+//   await user.save();
+//   res.send({msg:'success',user})
+// })
+
+app.post('/adminAuth',async(req,res)=>{
+  const {email,password} = req.body;
+  console.log({email,password});
+  const user = await admin.find({"email":email.toLowerCase()})
+  console.log(user);
+  if (user.length == 0) {return res.send({ status: 400, msg: "user not found" })}
+  const auth = await bcrypt.compare(password, user[0].password)
+  console.log({auth,pass:user[0].password});
+  if ( !auth ) { return res.send({ msg: "invalid credientials" , status:400})}
+  res.send({ msg: "login succesfully", status:200, user: user[0] });
+})
 
 app.get("/", (req, res) => {
   res.send({ status: 400, msg: "success" });

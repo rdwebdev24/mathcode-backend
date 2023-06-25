@@ -9,6 +9,11 @@ const User = new Schema({
     token: {type:String},
     questions:[{ type: String , default:[]}],
 })
+const Admin = new Schema({
+    email:{ type: String, unique: true,sparse:true},
+    password:{ type: String },
+    token: {type:String},
+})
 const ques = new Schema({
     Ques:{
       desc:{ type: String,require:true},
@@ -24,4 +29,5 @@ const ques = new Schema({
 
 const mathcodeUser = mongoose.model("mathcodeUser",User)
 const Questions = mongoose.model("ques",ques)
-module.exports = {mathcodeUser,Questions}
+const admin = mongoose.model("admin",Admin)
+module.exports = {mathcodeUser,Questions , admin}
