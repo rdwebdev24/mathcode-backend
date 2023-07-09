@@ -25,8 +25,8 @@ const User = new Schema({
     password:{ type: String },
     pic: {type:String},
     token: {type:String},
-    solved: [{type:String}],
-    attempted: [{type:String}],
+    solved: [{id: { type: String },previouswrong: { type: Number }}],
+    attempted: [{id: { type: String },previouswrong: { type: Number }}],
     accuracy:{type:Number,default:0}
 })
 

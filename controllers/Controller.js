@@ -136,14 +136,15 @@ const filterQues = async (req, res) => {
   const question = await Questions.find();
   const user = await mathcodeUser.find({ username });
 
-  
   var solvedQues = [];
-  if(username!='user') solvedQues = user[0].questions;
+  if (username != "user") solvedQues = user[0].questions;
 
   var filterQues = question;
 
-  if(diff!="") filterQues = filterQues.filter((item) => item.Ques.difficulty == diff);
-  if(Class!="") filterQues = filterQues.filter((item)=>item.Ques.level==Class)
+  if (diff != "")
+    filterQues = filterQues.filter((item) => item.Ques.difficulty == diff);
+  if (Class != "")
+    filterQues = filterQues.filter((item) => item.Ques.level == Class);
 
   if (filters.topic.length != 0) {
     filterQues = filterQues.filter((item) => {
@@ -151,65 +152,87 @@ const filterQues = async (req, res) => {
     });
   }
 
-  if(diff=="" && Class=="" && topic.length==0) filterQues = question
-  
+  if (diff == "" && Class == "" && topic.length == 0) filterQues = question;
+
   res.send({ msg: "success", filterQues });
 };
 
 const user_do_Ques = async (req, res) => {
-
   const { username, quesId, status } = req.body;
   const user = await mathcodeUser.find({ username });
 
-  if(status=="solved"){
-    const exist = user[0].solved.includes(quesId)
-    console.log({exist});
-    if(!exist){
+  if (status == "solved") {
+    const isSolved = user[0].solved.some(question => question.id === quesId);
+    console.log({ isSolved });
+    if (!isSolved) {
+      const atmpQues = user[0].attempted.filter(question => question.id === quesId);
+      var previouswrong = 0;
+      
+      if(atmpQues.length!=0) previouswrong = atmpQues[0].previouswrong
+      user[0].solved.push({id:quesId,previouswrong});
+      console.log({previouswrong,atmpQues});
+      const ques = await Questions.findOneAndUpdate(
+        { _id: quesId },
+        { $inc: { "Ques.submissions": 1 } },
+        { new: true }
+      );
 
-      const ques = await Questions.findOneAndUpdate({ _id: quesId },{ $inc: { 'Ques.submissions': 1 } },{ new: true });
-      console.log(ques);
-
-      user[0].solved.push(quesId);
-
-      const newAttemp = user[0].attempted.filter(atmpId=>atmpId!=quesId)
+      const newAttemp = user[0].attempted.filter((atmpId) => atmpId.id != quesId);
       user[0].attempted = newAttemp;
-
       await user[0].save();
+
     }
   }
-  if(status=="attempt"){
-    const  isAtmp  = user[0].attempted.includes(quesId)
-    const isSolved = user[0].solved.includes(quesId)
-    if(!isAtmp && !isSolved){
-      user[0].attempted.push(quesId);
+  if (status == "attempt") {
+    const isAtmp = user[0].attempted.some(question => question.id === quesId);
+    const isSolved = user[0].solved.some(question => question.id === quesId);
+    console.log({isAtmp,isSolved});
+
+    if (!isAtmp && !isSolved) {
+      console.log('iff');
+      user[0].attempted.push({id:quesId,previouswrong:1});
       await user[0].save();
+    } 
+    else if (isAtmp) {
+      console.log('elseiff');
+      await mathcodeUser.findOneAndUpdate(
+          { "attempted.id": quesId },
+          { $inc: { "attempted.$.previouswrong": 1 } },
+          { new: true }
+        )
+        .then((updatedSolved) => {
+          console.log(updatedSolved, " aaa");
+        })
+        .catch((error) => {
+          console.error(error);
+        });
     }
   }
 
   res.status(200).send({ msg: "success" });
 };
 
-const getSingleUser = async (req,res) => {
-  const {username} = req.query;
+const getSingleUser = async (req, res) => {
+  const { username } = req.query;
   const user = await mathcodeUser.find({ username });
-  if(user.length==0 || user==null || user == undefined) {return res.send({msg:"user not defined",data:[]})};
-  res.send({msg:"success",data:user[0]})
-}
-
-
+  if (user.length == 0 || user == null || user == undefined) {
+    return res.send({ msg: "user not defined", data: [] });
+  }
+  res.send({ msg: "success", data: user[0] });
+};
 
 module.exports = {
-    getSingleUser,
-    user_do_Ques,
-    filterQues,
-    googleAuth,
-    adminAuth,
-    adminDeleteQues,
-    adminUpdateQues,
-    adminGetOneQues,
-    adminCreateQues,
-    login,
-    register,
-    Get_all_users,
-    Get_all_questions,
-}
+  getSingleUser,
+  user_do_Ques,
+  filterQues,
+  googleAuth,
+  adminAuth,
+  adminDeleteQues,
+  adminUpdateQues,
+  adminGetOneQues,
+  adminCreateQues,
+  login,
+  register,
+  Get_all_users,
+  Get_all_questions,
+};
