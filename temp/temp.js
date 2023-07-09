@@ -35,34 +35,3 @@
 //   res.send({msg:'success',user})
 // })
 
-
-
-const question = [
-    {
-        quesId : 123,
-        solved : true,
-    },
-    {
-        quesId : 124,
-        solved : true,
-    },
-    {
-        quesId : 125,
-        solved : true,
-    },
-]
-
-const ques = [
-    {
-        quesId : 123,
-        solved : true,
-    },
-    {
-        quesId : 124,
-        solved : true,
-    },
-]
-
-const a = question.find((item)=>item.quesId==1223);
-if(a) console.log('aaa');
-console.log(a);

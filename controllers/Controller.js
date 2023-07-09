@@ -160,14 +160,11 @@ const user_do_Ques = async (req, res) => {
 
   const { username, quesId, status } = req.body;
   const user = await mathcodeUser.find({ username });
-  console.log(user);
 
   if(status=="solved"){
-    console.log('solved1');
     const exist = user[0].solved.includes(quesId)
     console.log({exist});
     if(!exist){
-      console.log('solved');
 
       const ques = await Questions.findOneAndUpdate({ _id: quesId },{ $inc: { 'Ques.submissions': 1 } },{ new: true });
       console.log(ques);
@@ -181,11 +178,9 @@ const user_do_Ques = async (req, res) => {
     }
   }
   if(status=="attempt"){
-    console.log('attemp1');
-    const exist = user[0].attempted.includes(quesId)
-    console.log({exist});
-    if(!exist){
-      console.log('attemp');
+    const  isAtmp  = user[0].attempted.includes(quesId)
+    const isSolved = user[0].solved.includes(quesId)
+    if(!isAtmp && !isSolved){
       user[0].attempted.push(quesId);
       await user[0].save();
     }
@@ -217,4 +212,4 @@ module.exports = {
     register,
     Get_all_users,
     Get_all_questions,
-};
+}
