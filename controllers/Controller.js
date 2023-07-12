@@ -1,4 +1,4 @@
-const { User, Questions, admin } = require("../model/model");
+const { User, Questions, admin, Feedback } = require("../model/model");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const { model } = require("mongoose");
@@ -122,6 +122,20 @@ const adminAuth = async (req, res) => {
   res.send({ msg: "login succesfully", status: 200, user: user[0] });
 };
 
+// USER FEEDBACK API 
+const userFeedback = async (req,res) => {
+  console.log('kk');
+  const {username,userFeedback} = req.body;
+  console.log({username,userFeedback});
+  const date = new Date().toLocaleDateString();
+  await Feedback.create({username,userFeedback,date});
+  res.send({msg:"feedback submitted",status:200});
+}
+
+const date = new Date().toDateString();
+
+console.log(date);
+
 const googleAuth = async (req, res) => {
   const { email } = req.body;
   const user = await User.find({ email });
@@ -235,4 +249,5 @@ module.exports = {
   register,
   Get_all_users,
   Get_all_questions,
+  userFeedback
 };

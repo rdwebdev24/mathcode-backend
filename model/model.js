@@ -75,7 +75,7 @@ const AdminSchema = new Schema({
 
 // User feedback Schema 
 const feedbackSchema = new Schema({
-    userId:{type:String},
+    username:{type:String},
     userFeedback:{type:String},
     date:{type:String},
 });
