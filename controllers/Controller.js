@@ -1,4 +1,4 @@
-const { mathcodeUser, Questions, admin } = require("../model/model");
+const { User, Questions, admin } = require("../model/model");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const { model } = require("mongoose");
@@ -6,7 +6,7 @@ const { model } = require("mongoose");
 const login = async (req, res) => {
   const { password, email } = req.body;
 
-  const user = await mathcodeUser.find({ email: email.toLowerCase() });
+  const user = await User.find({ email: email.toLowerCase() });
 
   if (user.length == 0) {
     return res.send({ status: 400, msg: "user not found" });
@@ -23,7 +23,7 @@ const login = async (req, res) => {
 const register = async (req, res) => {
   const { username, password, email } = req.body;
 
-  const oldUser = await mathcodeUser.find({ email: email.toLowerCase() });
+  const oldUser = await User.find({ email: email.toLowerCase() });
 
   if (oldUser.length != 0) {
     return res.send({ msg: "user already exist", status: 400 });
@@ -31,7 +31,7 @@ const register = async (req, res) => {
 
   const encryptedPassword = await bcrypt.hash(password, 10);
 
-  const newuser = await mathcodeUser.create({
+  const newuser = await User.create({
     username,
     email: email.toLowerCase(),
     password: encryptedPassword,
@@ -52,7 +52,7 @@ const register = async (req, res) => {
 };
 
 const Get_all_users = async (req, res) => {
-  const users = await mathcodeUser.find();
+  const users = await User.find();
   res.send({ msg: "success", users });
 };
 
@@ -124,7 +124,7 @@ const adminAuth = async (req, res) => {
 
 const googleAuth = async (req, res) => {
   const { email } = req.body;
-  const user = await mathcodeUser.find({ email });
+  const user = await User.find({ email });
   if (user.length == 0) return res.send({ status: 400, msg: "user not found" });
   res.send({ status: 200, msg: "Logic successful", user: user[0] });
 };
@@ -134,7 +134,7 @@ const filterQues = async (req, res) => {
   const { diff, topic, solved } = filters;
   const Class = filters.class;
   const question = await Questions.find();
-  const user = await mathcodeUser.find({ username });
+  const user = await User.find({ username });
 
   var solvedQues = [];
   if (username != "user") solvedQues = user[0].questions;
@@ -159,7 +159,7 @@ const filterQues = async (req, res) => {
 
 const user_do_Ques = async (req, res) => {
   const { username, quesId, status } = req.body;
-  const user = await mathcodeUser.find({ username });
+  const user = await User.find({ username });
 
   if (status == "solved") {
     const isSolved = user[0].solved.some(question => question.id === quesId);
@@ -195,7 +195,7 @@ const user_do_Ques = async (req, res) => {
     } 
     else if (isAtmp) {
       console.log('elseiff');
-      await mathcodeUser.findOneAndUpdate(
+      await User.findOneAndUpdate(
           { "attempted.id": quesId },
           { $inc: { "attempted.$.previouswrong": 1 } },
           { new: true }
@@ -214,7 +214,7 @@ const user_do_Ques = async (req, res) => {
 
 const getSingleUser = async (req, res) => {
   const { username } = req.query;
-  const user = await mathcodeUser.find({ username });
+  const user = await User.find({ username });
   if (user.length == 0 || user == null || user == undefined) {
     return res.send({ msg: "user not defined", data: [] });
   }
