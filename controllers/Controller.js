@@ -305,18 +305,19 @@ const Usercomments = async (req,res) => {
   res.send({msg:"Commented",status:200})
 }
 
+
 // Sub comments on the discussion section
 const UserSubcomments = async (req,res) => {
-  const {commentId,username,subcomment} = req.body;
+
+  const {commentId,username,comment} = req.body;
   const date = new Date().toLocaleDateString();
 
-  const SubcommentObj = {username,comment:subcomment,createdAt:date}
-  const NewSubComment = await Comments.create(SubcommentObj);
+  const SubcommentObj = {username,comment,createdAt:date}
   
   const Comment = await Comments.findById({_id:commentId});
-  
+
   if(Comment){
-    Comment.subcomment.push(NewSubComment)
+    Comment.subcomment.push(SubcommentObj)
     Comment.save();
   }
   
@@ -359,5 +360,5 @@ module.exports = {
   UserSubcomments,
   upvote_downvote_comment,
   updatediscussion,
-  upvote_downvote_discussion
+  upvote_downvote_discussion,
 };

@@ -36,7 +36,11 @@ const commentSchema = new Schema({
   upvote: { type: Number , default:0},
   downvote: { type: Number , default:0 },
   createdAt: { type: String , default:Date.now().toLocaleString},
-  subcomment: [{ type: mongoose.Schema.Types.ObjectId, ref: "Comments" }],
+  subcomment: [{
+    username: { type: String },
+    comment: { type: String },
+    createdAt: { type: String , default:Date.now().toLocaleString},
+  }],
 });
 // Problem of the day schema
 const podSchema = new Schema({
