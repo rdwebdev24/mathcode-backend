@@ -1,11 +1,18 @@
 
 // GETTING THE QUESTIONS FROM ONLINE DB TO LOCAL DB
+
+
 // app.get('/getQues',async (req,res)=>{
+    
+//     const topicArr = ["sets","relation","function","probability","triangle","mensuration","circle","permutaion and combination"]
 //     const ques = await Questions.find({});
 //     var newdata = [];
 //     ques.map((item)=>{
-//       const {desc,options,corrAns,level,type,likes,difficulty,dislikes,isReviewed,submissions} = item.Ques
-//       newdata.push({Ques:{submissions,likes,dislikes,level,desc,options,corrAns,type,difficulty,isReviewed}})
+//       const randomIndex = Math.floor(Math.random() * topicArr.length);
+//       const randomElement = topicArr[randomIndex];
+//       const {desc,options,corrAns,level,type,likes,difficulty,dislikes,isReviewed,submissions} = item
+//       const newObj = {submissions,likes,dislikes,level,desc,options,corrAns,topic:randomElement,difficulty,isReviewed}
+//       newdata.push(newObj)
 //     })
 //     const csv = new ObjectsToCsv(newdata);
 //     await csv.toDisk('./text3.csv');

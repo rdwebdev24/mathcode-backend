@@ -1,4 +1,4 @@
-const { User, Questions, admin, Feedback } = require("../model/model");
+const { User, Questions, admin, Feedback, Discussion, Comments } = require("../model/model");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const { model } = require("mongoose");
@@ -235,6 +235,110 @@ const getSingleUser = async (req, res) => {
   res.send({ msg: "success", data: user[0] });
 };
 
+
+// posting discussion 
+const discussion = async (req,res) => {
+  const {quesId,topic,sol_txt,sol_img,username} = req.body;
+  const date = new Date().toLocaleDateString();
+  console.log({quesId,topic,sol_txt,sol_img,username});
+
+  const discussionObject = {topic,sol_txt,sol_img,username,createdAt:date}
+  const ques = await Questions.findById({_id:quesId});
+  console.log(ques);
+  const Newdiscussion = await Discussion.create(discussionObject);
+  console.log(Newdiscussion);
+  ques.discussion.push(Newdiscussion);
+  ques.save();
+
+  const user = await User.find({username});
+  console.log(user);
+  if(user.length!=0){
+    user[0].userSubmissions.push(Newdiscussion);
+    user[0].save();
+  }
+  res.send({msg:"Solution submitted",status:200})
+}
+
+// updating the discussion 
+const updatediscussion = async (req,res) => {
+  const {discussionId,topic,sol_txt,sol_img,username} = req.body;
+  const date = new Date().toLocaleDateString();
+
+  console.log({discussionId,topic,sol_txt,sol_img,username});
+  const updatedDiscussion = await Discussion.findByIdAndUpdate({_id:discussionId}, {
+    topic,
+    sol_txt,
+    sol_img,
+    username,
+    date
+  }, { new: true });
+  res.send({msg:"Solution updated",status:200})
+}
+
+// updating likes and dislikes in the discussion
+const upvote_downvote_discussion = async (req,res) => {
+  const {status,discussionId} = req.body;
+  if(status=="upvote"){
+    const updatedDiscussion = await Discussion.findByIdAndUpdate({_id:discussionId}, {
+      $inc: { upvote: 1 },
+    }, { new: true });
+  }
+  else{
+    const updatedDiscussion = await Discussion.findByIdAndUpdate({_id:discussionId}, {
+      $inc: { downvote: 1 },
+    }, { new: true });
+  }
+  res.send({msg:"upvote and downvote  updated",status:200})
+}
+
+// comments on the discussion section
+const Usercomments = async (req,res) => {
+  const {discussionId,username,comment} = req.body;
+  const date = new Date().toLocaleDateString();
+
+  const commentObj = {username,comment,createdAt:date}
+  const discussion = await Discussion.findById({_id:discussionId});
+  const NewComment = await Comments.create(commentObj);
+  discussion.comments.push(NewComment);
+  discussion.save();
+  
+  res.send({msg:"Commented",status:200})
+}
+
+// Sub comments on the discussion section
+const UserSubcomments = async (req,res) => {
+  const {commentId,username,subcomment} = req.body;
+  const date = new Date().toLocaleDateString();
+
+  const SubcommentObj = {username,comment:subcomment,createdAt:date}
+  const NewSubComment = await Comments.create(SubcommentObj);
+  
+  const Comment = await Comments.findById({_id:commentId});
+  
+  if(Comment){
+    Comment.subcomment.push(NewSubComment)
+    Comment.save();
+  }
+  
+  res.send({msg:"replied to Comment",status:200})
+}
+
+// updating likes and dislikes in the comment
+const upvote_downvote_comment = async (req,res) => {
+  const {status,commentId} = req.body;
+  if(status=="upvote"){
+    await Comments.findByIdAndUpdate({_id:commentId}, {
+      $inc: { upvote: 1 },
+    }, { new: true });
+  }
+  else{
+    await Comments.findByIdAndUpdate({_id:commentId}, {
+      $inc: { downvote: 1 },
+    }, { new: true });
+  }
+  res.send({msg:"upvote and downvote updated",status:200})
+}
+
 module.exports = {
   getSingleUser,
   user_do_Ques,
@@ -249,5 +353,11 @@ module.exports = {
   register,
   Get_all_users,
   Get_all_questions,
-  userFeedback
+  userFeedback,
+  discussion,
+  Usercomments,
+  UserSubcomments,
+  upvote_downvote_comment,
+  updatediscussion,
+  upvote_downvote_discussion
 };

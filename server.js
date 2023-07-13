@@ -16,6 +16,12 @@ const {
   filterQues,
   user_do_Ques,
   userFeedback,
+  discussion,
+  Usercomments,
+  UserSubcomments,
+  updatediscussion,
+  upvote_downvote_discussion,
+  upvote_downvote_comment,
 } = require("./controllers/Controller");
 const ObjectsToCsv = require("objects-to-csv");
 
@@ -32,14 +38,18 @@ app.post("/login", login);
 app.post("/register", register);
 app.post("/googleAuth", googleAuth);
 app.post("/feedback", userFeedback);
+app.post("/discussion", discussion);
+app.post("/UpdateDiscussion", updatediscussion);
+app.post("/upvote_downvote_discussion", upvote_downvote_discussion);
+app.post("/comment", Usercomments);
+app.post("/subcomment", UserSubcomments);
+app.post("/upvote_downvote_comment", upvote_downvote_comment);
 app.post("/problems", filterQues);
 app.post("/userques", user_do_Ques);
 
 app.get("/users", Get_all_users);
 app.get("/all", Get_all_questions);
 app.get("/getSingleUser", getSingleUser);
-
-
 
 
 
