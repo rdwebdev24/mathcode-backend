@@ -16,15 +16,10 @@ const {
   filterQues,
   user_do_Ques,
   userFeedback,
-  discussion,
-  Usercomments,
-  UserSubcomments,
-  updatediscussion,
-  upvote_downvote_discussion,
-  upvote_downvote_comment,
-  UserDeletecomments,
 } = require("./controllers/Controller");
 const ObjectsToCsv = require("objects-to-csv");
+const { Usercomments, UserSubcomments, upvote_downvote_comment } = require("./controllers/Comments");
+const { discussion, updatediscussion, upvote_downvote_discussion } = require("./controllers/Discussion");
 
 connect();
 

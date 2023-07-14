@@ -24,8 +24,8 @@ const discussionSchema = new Schema({
   sol_img: { type: String },
   username: { type: String },
   createdAt: { type: String , default:Date.now().toLocaleString},
-  upvote: { type: Number, default: 0 },
-  downvote: { type: Number, default: 0 },
+  upvote: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+  downvote: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
   comments: [{ type: mongoose.Schema.Types.ObjectId, ref: "Comments" }],
 });
 
@@ -33,15 +33,12 @@ const discussionSchema = new Schema({
 const commentSchema = new Schema({
   username: { type: String },
   comment: { type: String },
-  upvote: { type: Number , default:0},
-  downvote: { type: Number , default:0 },
+  upvote: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+  downvote: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
   createdAt: { type: String , default:Date.now().toLocaleString},
-  subcomment: [{
-    username: { type: String },
-    comment: { type: String },
-    createdAt: { type: String , default:Date.now().toLocaleString},
-  }],
+  subcomment: [{ type: mongoose.Schema.Types.ObjectId, ref: "Comments" }],
 });
+
 // Problem of the day schema
 const podSchema = new Schema({
   desc: { type: String, require: true },
@@ -86,18 +83,23 @@ const AdminSchema = new Schema({
 
 // User feedback Schema
 const feedbackSchema = new Schema({
-  username: { type: String },
+  email: { type: String },
   userFeedback: { type: String },
   date: { type: String },
 });
 
 const User = mongoose.model("User", UserSchema);
+
 const admin = mongoose.model("Admin", AdminSchema);
-const Questions = mongoose.model("Questions", QuestionSchema);
-const Discussion = mongoose.model("Discussion", discussionSchema);
-const Comments = mongoose.model("Comments", commentSchema);
 const Feedback = mongoose.model("Feedback", feedbackSchema);
+
+const Questions = mongoose.model("Questions", QuestionSchema);
 const POD = mongoose.model("POD", podSchema);
+
+const Discussion = mongoose.model("Discussion", discussionSchema);
+
+const Comments = mongoose.model("Comments", commentSchema);
+
 
 module.exports = {
   User,

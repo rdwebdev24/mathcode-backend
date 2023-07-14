@@ -1,5 +1,6 @@
 const express = require('express');
-const { adminCreateQues, adminGetOneQues, adminUpdateQues, adminDeleteQues, adminAuth, Get_all_questions } = require('../controllers/Controller');
+const { adminCreateQues, adminGetOneQues, adminUpdateQues, adminDeleteQues, adminAuth } = require('../controllers/Admin');
+const { Get_all_questions } = require('../controllers/Controller');
 
 const router = express.Router();
 
